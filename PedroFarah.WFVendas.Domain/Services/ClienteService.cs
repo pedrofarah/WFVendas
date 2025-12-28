@@ -6,21 +6,21 @@ using System.Data;
 
 namespace PedroFarah.WFVendas.Domain.Services
 {
-    public class ProdutoService : BaseService<Produto>, IProdutoService
+    public class ClienteService : BaseService<Cliente>, IClienteService
     {
-        public ProdutoService(IDataModule dataModule, IValidator<Produto> validator)
+        public ClienteService(IDataModule dataModule, IValidator<Cliente> validator)
             : base(dataModule, validator)
-        {
+        { 
         }
 
-        public async Task InserirAsync(Produto produto)
+        public async Task InserirAsync(Cliente cliente)
         {
             await DataModule.BeginAsync();
             try
             {
-                Validar(produto);
+                Validar(cliente);
 
-                await DataModule.ProdutoRepository.InserirAsync(produto);
+                await DataModule.ClienteRepository.InserirAsync(cliente);
                 await DataModule.CommitAsync();
             }
             catch
@@ -29,14 +29,14 @@ namespace PedroFarah.WFVendas.Domain.Services
             }
         }
 
-        public async Task AtualizarAsync(Produto produto)
+        public async Task AtualizarAsync(Cliente cliente)
         {
             await DataModule.BeginAsync();
             try
             {
-                Validar(produto);
+                Validar(cliente);
 
-                await DataModule.ProdutoRepository.AtualizarAsync(produto);
+                await DataModule.ClienteRepository.AtualizarAsync(cliente);
                 await DataModule.CommitAsync();
             }
             catch
@@ -45,15 +45,15 @@ namespace PedroFarah.WFVendas.Domain.Services
             }
         }
 
-        public async Task ExcluirAsync(Produto produto)
+        public async Task ExcluirAsync(Cliente cliente)
         {
-            if(produto.Id == 0)
+            if(cliente.Id == 0)
                 throw new ArgumentException("Id não informado.");
 
             await DataModule.BeginAsync();
             try
             {
-                await DataModule.ProdutoRepository.ExcluirAsync(produto);
+                await DataModule.ClienteRepository.ExcluirAsync(cliente);
                 await DataModule.CommitAsync();
             }
             catch
@@ -62,12 +62,12 @@ namespace PedroFarah.WFVendas.Domain.Services
             }
         }
 
-        public async Task<List<Produto>> ListarAsync()
+        public async Task<List<Cliente>> ListarAsync()
         {
             await DataModule.BeginAsync();
             try
             {
-                var ret = await DataModule.ProdutoRepository.ListarAsync();
+                var ret = await DataModule.ClienteRepository.ListarAsync();
                 await DataModule.CommitAsync();
                 return ret;
             }
@@ -83,7 +83,7 @@ namespace PedroFarah.WFVendas.Domain.Services
             await DataModule.BeginAsync();
             try
             {
-                var ret = DataModule.ProdutoRepository.ListarGrid();
+                var ret = DataModule.ClienteRepository.ListarGrid();
                 await DataModule.CommitAsync();
                 return ret;
             }
@@ -94,15 +94,12 @@ namespace PedroFarah.WFVendas.Domain.Services
             }
         }
 
-        public async Task<Produto?> ObterPorIdAsync(Produto produto)
+        public async Task<Cliente?> ObterPorIdAsync(Cliente cliente)
         {
-            if(produto.Id == 0)
-                throw new ArgumentException("Id não informado.");
-
             await DataModule.BeginAsync();
             try
             {
-                var ret = await DataModule.ProdutoRepository.ObterPorIdAsync(produto);
+                var ret = await DataModule.ClienteRepository.ObterPorIdAsync(cliente.Id);
                 await DataModule.CommitAsync();
                 return ret;
             }
@@ -110,20 +107,6 @@ namespace PedroFarah.WFVendas.Domain.Services
             {
                 await DataModule.RollbackAsync();
                 throw;
-            }
-        }
-
-        public async Task BaixarEstoqueAsync(Produto produto, int qtd)
-        {
-            await DataModule.BeginAsync();
-            try
-            {
-                await DataModule.ProdutoRepository.BaixarEstoqueAsync(produto, qtd);
-                await DataModule.CommitAsync();
-            }
-            catch
-            {
-                await DataModule.RollbackAsync();
             }
         }
 

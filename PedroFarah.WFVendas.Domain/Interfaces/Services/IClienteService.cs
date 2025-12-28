@@ -1,16 +1,15 @@
 ﻿using PedroFarah.WFVendas.Dto;
 using System.Data;
 
-namespace PedroFarah.WFVendas.Persistence.Interfaces.Repository
+namespace PedroFarah.WFVendas.Domain.Interfaces.Services
 {
-    public interface IClienteRepository
+    public interface IClienteService
     {
         Task InserirAsync(Cliente cliente);
         Task AtualizarAsync(Cliente cliente);
         Task ExcluirAsync(Cliente cliente);
-        DataTable ListarGrid();
         Task<List<Cliente>> ListarAsync();
-        Task<Cliente?> ObterPorIdAsync(int id);
-        Task<bool> EmailExisteAsync(Cliente cliente);
+        Task<DataTable> ListarGridAsync();
+        Task<Cliente?> ObterPorIdAsync(Cliente cliente);
     }
 }

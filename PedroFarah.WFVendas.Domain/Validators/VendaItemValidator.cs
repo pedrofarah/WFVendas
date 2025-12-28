@@ -30,7 +30,7 @@ namespace PedroFarah.WFVendas.Domain.Validators
 
         private async Task<bool> validarEstoqueAsync(VendaItem vendaItem, CancellationToken cancellationToken)
         {
-            var produto = await _dataModule.ProdutoRepository.ObterPorIdAsync(vendaItem.ProdutoId);
+            var produto = await _dataModule.ProdutoRepository.ObterPorIdAsync(new Produto { Id = vendaItem.ProdutoId });
             if(produto == null)
                 return false;
             return (produto?.Estoque ?? 0) < vendaItem.Quantidade;

@@ -11,6 +11,8 @@ namespace PedroFarah.WFVendas.Persistence.DataModule
         private NpgsqlConnection? _connection;
         private NpgsqlTransaction? _transaction;
 
+        private bool _disposed;
+
         public NpgsqlConnection? Connection => _connection ??= new NpgsqlConnection(configuration["ConnectionStrings:DefaultConnection"] ?? "");
 
         private IClienteRepository? _clienteRepository;
@@ -49,6 +51,9 @@ namespace PedroFarah.WFVendas.Persistence.DataModule
 
         public async ValueTask DisposeAsync()
         {
+            if(_disposed)
+                return;
+
             if(_transaction != null)
             {
                 await _transaction.DisposeAsync();
@@ -60,6 +65,14 @@ namespace PedroFarah.WFVendas.Persistence.DataModule
                 await _connection.DisposeAsync();
                 _connection = null;
             }
+
+            _disposed = true;
+            GC.SuppressFinalize(this);
+        }
+
+        public void Dispose()
+        {
+            DisposeAsync().AsTask().GetAwaiter().GetResult();
         }
 
     }

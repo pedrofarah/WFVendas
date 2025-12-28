@@ -7,8 +7,10 @@ namespace PedroFarah.WFVendas.Persistence.Repository
 {
     public class ClienteRepository : BaseRepository, IClienteRepository
     {
-        public ClienteRepository(NpgsqlConnection connection, NpgsqlTransaction transaction)
-            : base(connection, transaction)
+        public ClienteRepository(
+            NpgsqlConnection connection, 
+            NpgsqlTransaction transaction)
+        : base(connection, transaction)
         {}
 
         public async Task InserirAsync(Cliente cliente)
@@ -42,12 +44,12 @@ namespace PedroFarah.WFVendas.Persistence.Repository
             await cmd.ExecuteNonQueryAsync();
         }
 
-        public async Task ExcluirAsync(int id)
+        public async Task ExcluirAsync(Cliente cliente)
         {
             const string sql = @"DELETE FROM clientes WHERE id = @id";
 
             await using var cmd = new NpgsqlCommand(sql, Connection, Transaction);
-            cmd.Parameters.AddWithValue("id", id);
+            cmd.Parameters.AddWithValue("id", cliente.Id);
 
             await cmd.ExecuteNonQueryAsync();
         }

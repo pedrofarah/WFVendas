@@ -26,6 +26,16 @@ namespace PedroFarah.WFVendas.Persistence.Repository
             await cmd.ExecuteNonQueryAsync();
         }
 
+        public async Task ExcluirAsync(Produto produto)
+        {
+            const string sql = @"DELETE FROM produtos WHERE id = @id";
+
+            await using var cmd = new NpgsqlCommand(sql, Connection, Transaction);
+            cmd.Parameters.AddWithValue("id", produto.Id);
+
+            await cmd.ExecuteNonQueryAsync();
+        }
+
         public async Task<List<Produto>> ListarAsync()
         {
             const string sql = @"
@@ -74,7 +84,7 @@ namespace PedroFarah.WFVendas.Persistence.Repository
             return table;
         }
 
-        public async Task<Produto?> ObterPorIdAsync(int id)
+        public async Task<Produto?> ObterPorIdAsync(Produto produto)
         {
             const string sql = @"
                 SELECT id, nome, descricao, preco, estoque
@@ -82,7 +92,7 @@ namespace PedroFarah.WFVendas.Persistence.Repository
                 WHERE id = @id";
 
             await using var cmd = new NpgsqlCommand(sql, Connection, Transaction);
-            cmd.Parameters.AddWithValue("id", id);
+            cmd.Parameters.AddWithValue("id", produto.Id);
 
             await using var reader = await cmd.ExecuteReaderAsync();
 
