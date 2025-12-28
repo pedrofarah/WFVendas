@@ -3,18 +3,18 @@ using PedroFarah.WFVendas.Dto;
 
 namespace PedroFarah.WFVendas.Host
 {
-    public partial class FrmProdutos: Form
+    public partial class FrmClientes: Form
     {
-        private readonly IProdutoService _service;
-        private int _produtoIdSelecionado = 0;
+        private readonly IClienteService _service;
+        private int _clienteIdSelecionado;
 
-        public FrmProdutos(IProdutoService service)
+        public FrmClientes(IClienteService service)
         {
             InitializeComponent();
             _service = service;
         }
 
-        private void FrmProdutos_Load(object sender, EventArgs e)
+        private void FrmClientes_Shown(object? sender, EventArgs e)
         {
             BeginInvoke(async () =>
             {
@@ -31,36 +31,35 @@ namespace PedroFarah.WFVendas.Host
             });
         }
 
+
         private async Task CarregarGridAsync()
         {
-            dgvProdutos.DataSource = await _service.ListarGridAsync();
+            dgvClientes.DataSource = await _service.ListarGridAsync();
         }
 
         private void btnNovo_Click(object sender, EventArgs e)
         {
-            _produtoIdSelecionado = 0;
+            _clienteIdSelecionado = 0;
             txtNome.Clear();
-            txtDescricao.Clear();
-            numPreco.Value = 0;
-            numEstoque.Value = 0;
+            txtEmail.Clear();
+            txtTelefone.Clear();
             txtNome.Focus();
         }
 
         private async void btnSalvar_Click(object sender, EventArgs e)
         {
-            var produto = new Produto
+            var cliente = new Cliente
             {
-                Id = _produtoIdSelecionado,
+                Id = _clienteIdSelecionado,
                 Nome = txtNome.Text,
-                Descricao = txtDescricao.Text,
-                Preco = numPreco.Value,
-                Estoque = (int)numEstoque.Value
+                Email = txtEmail.Text,
+                Telefone = txtTelefone.Text
             };
 
-            if(_produtoIdSelecionado == 0)
-                await _service.InserirAsync(produto);
+            if(_clienteIdSelecionado == 0)
+                await _service.InserirAsync(cliente);
             else
-                await _service.AtualizarAsync(produto);
+                await _service.AtualizarAsync(cliente);
 
             await CarregarGridAsync();
             btnNovo.PerformClick();
@@ -68,7 +67,7 @@ namespace PedroFarah.WFVendas.Host
 
         private async void btnExcluir_Click(object sender, EventArgs e)
         {
-            if(_produtoIdSelecionado == 0)
+            if(_clienteIdSelecionado == 0)
                 return;
 
             if(MessageBox.Show(
@@ -78,25 +77,28 @@ namespace PedroFarah.WFVendas.Host
                 MessageBoxIcon.Question) != DialogResult.Yes)
                 return;
 
-            await _service.ExcluirAsync(new Produto { Id = _produtoIdSelecionado });
+            await _service.ExcluirAsync(new Cliente { Id = _clienteIdSelecionado });
 
             await CarregarGridAsync();
             btnNovo.PerformClick();
         }
 
-        private async void dgvProdutos_CellClick(object sender, DataGridViewCellEventArgs e)
+        private async void dgvClientes_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if(e.RowIndex < 0) return;
+            if(e.RowIndex < 0)
+                return;
 
-            var row = dgvProdutos.Rows[e.RowIndex];
-            _produtoIdSelecionado = (int)row.Cells["Id"].Value;
+            _clienteIdSelecionado = (int)dgvClientes.Rows[e.RowIndex].Cells["Id"].Value;
 
-            var prod = await _service.ObterPorIdAsync(new Produto { Id = _produtoIdSelecionado });
+            var cliente = await _service.ObterPorIdAsync(
+                new Cliente { Id = _clienteIdSelecionado });
 
-            txtNome.Text = prod.Nome;
-            txtDescricao.Text = prod.Descricao;
-            numPreco.Value = prod.Preco;
-            numEstoque.Value = prod.Estoque;
+            if(cliente == null)
+                return;
+
+            txtNome.Text = cliente.Nome;
+            txtEmail.Text = cliente.Email;
+            txtTelefone.Text = cliente.Telefone;
         }
     }
 }

@@ -23,10 +23,19 @@ namespace PedroFarah.WFVendas.Host
             form.Show();
         }
 
-
         private void produtosToolStripMenuItem_Click(object sender, EventArgs e)
         {
             AbrirFormulario<FrmProdutos>();
+        }
+
+        private void clientesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AbrirFormulario<FrmClientes>();
+        }
+
+        private void vendasToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AbrirFormulario<FrmVendas>();
         }
     }
 }

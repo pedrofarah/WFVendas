@@ -6,7 +6,7 @@ using PedroFarah.WFVendas.Persistence.Repository;
 
 namespace PedroFarah.WFVendas.Persistence.DataModule
 {
-    public class DataModule(IConfiguration configuration) : IDataModule
+    public class DataModule(IConfiguration configuration) : IDataModule, IAsyncDisposable, IDisposable
     {
         private NpgsqlConnection? _connection;
         private NpgsqlTransaction? _transaction;
@@ -15,28 +15,48 @@ namespace PedroFarah.WFVendas.Persistence.DataModule
 
         public NpgsqlConnection? Connection => _connection ??= new NpgsqlConnection(configuration["ConnectionStrings:DefaultConnection"] ?? "");
 
-        private IClienteRepository? _clienteRepository;
-        public IClienteRepository ClienteRepository => _clienteRepository ??= new ClienteRepository(Connection!, _transaction!);
+        public NpgsqlTransaction? Transaction => _transaction;
 
-        private IProdutoRepository? _ProdutoRepository;
-        public IProdutoRepository ProdutoRepository => _ProdutoRepository ??= new ProdutoRepository(Connection!, _transaction!);
+        public IClienteRepository ClienteRepository
+            => new ClienteRepository(this);
 
-        private IVendaRepository? _VendaRepository;
-        public IVendaRepository VendaRepository => _VendaRepository ??= new VendaRepository(Connection!, _transaction!);
+        public IProdutoRepository ProdutoRepository
+            => new ProdutoRepository(this);
+
+        public IVendaRepository VendaRepository
+            => new VendaRepository(this);
 
         public async Task BeginAsync()
         {
-            await Connection!.OpenAsync();
+            if(Connection == null)
+                throw new InvalidOperationException("Conexão não iniciada.");
 
-            _transaction = await Connection.BeginTransactionAsync();
+            if(Connection.State == System.Data.ConnectionState.Broken)
+            {
+                await Connection.CloseAsync().ConfigureAwait(false);
+            }
+
+            if(Connection.State != System.Data.ConnectionState.Open)
+            {
+                await Connection.OpenAsync().ConfigureAwait(false);
+            }
+
+            _transaction = await Connection.BeginTransactionAsync()
+                                           .ConfigureAwait(false);
         }
 
         public async Task CommitAsync()
         {
+            if(Connection!.State != System.Data.ConnectionState.Open)
+            {
+                throw new InvalidOperationException("Conexão fechada.");
+            }
+
             if(_transaction == null)
                 return;
 
             await _transaction.CommitAsync();
+
             await DisposeAsync();
         }
 
@@ -46,8 +66,10 @@ namespace PedroFarah.WFVendas.Persistence.DataModule
                 return;
 
             await _transaction.RollbackAsync();
+
             await DisposeAsync();
         }
+
 
         public async ValueTask DisposeAsync()
         {
@@ -56,13 +78,16 @@ namespace PedroFarah.WFVendas.Persistence.DataModule
 
             if(_transaction != null)
             {
-                await _transaction.DisposeAsync();
+                await _transaction.DisposeAsync().ConfigureAwait(false);
                 _transaction = null;
             }
 
             if(_connection != null)
             {
-                await _connection.DisposeAsync();
+                if(_connection.State != System.Data.ConnectionState.Closed)
+                    await _connection.CloseAsync().ConfigureAwait(false);
+
+                await _connection.DisposeAsync().ConfigureAwait(false);
                 _connection = null;
             }
 

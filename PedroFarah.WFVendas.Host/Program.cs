@@ -4,6 +4,7 @@ using PedroFarah.WFVendas.Domain.Interfaces.Services;
 using PedroFarah.WFVendas.Domain.Services;
 using PedroFarah.WFVendas.Domain.Validators;
 using PedroFarah.WFVendas.Dto;
+using PedroFarah.WFVendas.Host.ExceptionHandlers;
 using PedroFarah.WFVendas.Persistence.DataModule;
 using PedroFarah.WFVendas.Persistence.Interfaces.DataModule;
 
@@ -20,17 +21,38 @@ namespace PedroFarah.WFVendas.Host
             var host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder()
                 .ConfigureServices((context, services) =>
                 {
-                    services.AddTransient<FrmPrincipal>();
-                    services.AddTransient<FrmProdutos>();
                     services.AddScoped<IDataModule, DataModule>();
                     services.AddScoped<IValidator<Produto>, ProdutoValidator>();
                     services.AddScoped<IValidator<Cliente>, ClienteValidator>();
+                    services.AddScoped<IValidator<Venda>, VendaValidator>();
                     services.AddScoped<IClienteService, ClienteService>();
                     services.AddScoped<IProdutoService, ProdutoService>();
+                    services.AddScoped<IVendaService, VendaService>();
+                    services.AddTransient<FrmPrincipal>();
+                    services.AddTransient<FrmProdutos>();
+                    services.AddTransient<FrmClientes>();
+                    services.AddTransient<FrmVendas>();
                 })
                 .Build();
 
             ApplicationConfiguration.Initialize();
+
+            Application.ThreadException += (sender, args) =>
+            {
+                ExceptionHandler.Handle(args.Exception);
+            };
+
+            AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
+            {
+                if(args.ExceptionObject is Exception ex)
+                    ExceptionHandler.Handle(ex);
+            };
+
+            TaskScheduler.UnobservedTaskException += (sender, args) =>
+            {
+                ExceptionHandler.Handle(args.Exception);
+                args.SetObserved();
+            };
 
             using var scope = host.Services.CreateScope();
             var mainForm = scope.ServiceProvider.GetRequiredService<FrmPrincipal>();

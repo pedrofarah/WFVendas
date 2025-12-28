@@ -18,7 +18,7 @@ namespace PedroFarah.WFVendas.Domain.Services
             await DataModule.BeginAsync();
             try
             {
-                Validar(produto);
+                await ValidarAsync(produto);
 
                 await DataModule.ProdutoRepository.InserirAsync(produto);
                 await DataModule.CommitAsync();
@@ -26,6 +26,7 @@ namespace PedroFarah.WFVendas.Domain.Services
             catch
             {
                 await DataModule.RollbackAsync();
+                throw;
             }
         }
 
@@ -34,7 +35,7 @@ namespace PedroFarah.WFVendas.Domain.Services
             await DataModule.BeginAsync();
             try
             {
-                Validar(produto);
+                await ValidarAsync(produto);
 
                 await DataModule.ProdutoRepository.AtualizarAsync(produto);
                 await DataModule.CommitAsync();
@@ -42,6 +43,7 @@ namespace PedroFarah.WFVendas.Domain.Services
             catch
             {
                 await DataModule.RollbackAsync();
+                throw;
             }
         }
 
@@ -59,6 +61,7 @@ namespace PedroFarah.WFVendas.Domain.Services
             catch
             {
                 await DataModule.RollbackAsync();
+                throw;
             }
         }
 
@@ -124,6 +127,7 @@ namespace PedroFarah.WFVendas.Domain.Services
             catch
             {
                 await DataModule.RollbackAsync();
+                throw;
             }
         }
 

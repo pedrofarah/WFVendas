@@ -1,5 +1,6 @@
 ﻿using Npgsql;
 using PedroFarah.WFVendas.Dto;
+using PedroFarah.WFVendas.Persistence.Interfaces.DataModule;
 using PedroFarah.WFVendas.Persistence.Interfaces.Repository;
 using System.Data;
 
@@ -7,8 +8,8 @@ namespace PedroFarah.WFVendas.Persistence.Repository
 {
     public class ProdutoRepository: BaseRepository, IProdutoRepository
     {
-        public ProdutoRepository(NpgsqlConnection connection, NpgsqlTransaction transaction)
-            : base(connection, transaction)
+        public ProdutoRepository(IDataModule dataModule)
+            : base(dataModule)
         { }
 
         public async Task InserirAsync(Produto produto)
@@ -17,7 +18,7 @@ namespace PedroFarah.WFVendas.Persistence.Repository
                 INSERT INTO produtos (nome, descricao, preco, estoque)
                 VALUES (@nome, @descricao, @preco, @estoque)";
 
-            await using var cmd = new NpgsqlCommand(sql, Connection, Transaction);
+            await using var cmd = new NpgsqlCommand(sql, DataModule.Connection, DataModule.Transaction);
             cmd.Parameters.AddWithValue("nome", produto.Nome);
             cmd.Parameters.AddWithValue("descricao", produto.Descricao);
             cmd.Parameters.AddWithValue("preco", produto.Preco);
@@ -30,7 +31,7 @@ namespace PedroFarah.WFVendas.Persistence.Repository
         {
             const string sql = @"DELETE FROM produtos WHERE id = @id";
 
-            await using var cmd = new NpgsqlCommand(sql, Connection, Transaction);
+            await using var cmd = new NpgsqlCommand(sql, DataModule.Connection, DataModule.Transaction);
             cmd.Parameters.AddWithValue("id", produto.Id);
 
             await cmd.ExecuteNonQueryAsync();
@@ -45,7 +46,7 @@ namespace PedroFarah.WFVendas.Persistence.Repository
 
             var lista = new List<Produto>();
 
-            await using var cmd = new NpgsqlCommand(sql, Connection, Transaction);
+            await using var cmd = new NpgsqlCommand(sql, DataModule.Connection, DataModule.Transaction);
             await using var reader = await cmd.ExecuteReaderAsync();
 
             while(await reader.ReadAsync())
@@ -77,7 +78,7 @@ namespace PedroFarah.WFVendas.Persistence.Repository
 
             var table = new DataTable();
 
-            NpgsqlDataAdapter npgsqlDataAdapter = new(sql, Connection);
+            NpgsqlDataAdapter npgsqlDataAdapter = new(sql, DataModule.Connection!);
             using var da = npgsqlDataAdapter;
             da.Fill(table);
 
@@ -91,7 +92,7 @@ namespace PedroFarah.WFVendas.Persistence.Repository
                 FROM produtos
                 WHERE id = @id";
 
-            await using var cmd = new NpgsqlCommand(sql, Connection, Transaction);
+            await using var cmd = new NpgsqlCommand(sql, DataModule.Connection, DataModule.Transaction);
             cmd.Parameters.AddWithValue("id", produto.Id);
 
             await using var reader = await cmd.ExecuteReaderAsync();
@@ -119,7 +120,7 @@ namespace PedroFarah.WFVendas.Persistence.Repository
                     estoque = @estoque
                 WHERE id = @id";
 
-            await using var cmd = new NpgsqlCommand(sql, Connection, Transaction);
+            await using var cmd = new NpgsqlCommand(sql, DataModule.Connection, DataModule.Transaction);
             cmd.Parameters.AddWithValue("id", produto.Id);
             cmd.Parameters.AddWithValue("nome", produto.Nome);
             cmd.Parameters.AddWithValue("descricao", produto.Descricao);
@@ -133,7 +134,7 @@ namespace PedroFarah.WFVendas.Persistence.Repository
         {
             var estoqueCmd = new NpgsqlCommand(
                 @"UPDATE produtos SET estoque = estoque - @qtd
-                      WHERE id=@id", Connection, Transaction);
+                      WHERE id=@id", DataModule.Connection, DataModule.Transaction);
 
             estoqueCmd.Parameters.AddWithValue("qtd", qtd);
             estoqueCmd.Parameters.AddWithValue("id", produto.Id);

@@ -1,5 +1,6 @@
 ﻿using Npgsql;
 using PedroFarah.WFVendas.Dto;
+using PedroFarah.WFVendas.Persistence.Interfaces.DataModule;
 using PedroFarah.WFVendas.Persistence.Interfaces.Repository;
 using System.Data;
 
@@ -7,16 +8,14 @@ namespace PedroFarah.WFVendas.Persistence.Repository
 {
     public class ClienteRepository : BaseRepository, IClienteRepository
     {
-        public ClienteRepository(
-            NpgsqlConnection connection, 
-            NpgsqlTransaction transaction)
-        : base(connection, transaction)
+        public ClienteRepository(IDataModule dataModule)
+        : base(dataModule)
         {}
 
         public async Task InserirAsync(Cliente cliente)
         {
             var cmd = new NpgsqlCommand(
-                "INSERT INTO clientes (nome, email, telefone) VALUES (@nome,@email,@telefone)", Connection, Transaction);
+                "INSERT INTO clientes (nome, email, telefone) VALUES (@nome,@email,@telefone)", DataModule.Connection, DataModule.Transaction);
 
             cmd.Parameters.AddWithValue("nome", cliente.Nome);
             cmd.Parameters.AddWithValue("email", cliente.Email);
@@ -35,7 +34,7 @@ namespace PedroFarah.WFVendas.Persistence.Repository
              WHERE id = @id"
             ;
 
-            await using var cmd = new NpgsqlCommand(sql, Connection, Transaction);
+            await using var cmd = new NpgsqlCommand(sql, DataModule.Connection, DataModule.Transaction);
             cmd.Parameters.AddWithValue("id", cliente.Id);
             cmd.Parameters.AddWithValue("nome", cliente.Nome);
             cmd.Parameters.AddWithValue("email", cliente.Email);
@@ -48,7 +47,7 @@ namespace PedroFarah.WFVendas.Persistence.Repository
         {
             const string sql = @"DELETE FROM clientes WHERE id = @id";
 
-            await using var cmd = new NpgsqlCommand(sql, Connection, Transaction);
+            await using var cmd = new NpgsqlCommand(sql, DataModule.Connection, DataModule.Transaction);
             cmd.Parameters.AddWithValue("id", cliente.Id);
 
             await cmd.ExecuteNonQueryAsync();
@@ -67,7 +66,7 @@ namespace PedroFarah.WFVendas.Persistence.Repository
 
             var table = new DataTable();
 
-            NpgsqlDataAdapter npgsqlDataAdapter = new(sql, Connection);
+            NpgsqlDataAdapter npgsqlDataAdapter = new(sql, DataModule.Connection!);
             using var da = npgsqlDataAdapter;
             da.Fill(table);
 
@@ -83,7 +82,7 @@ namespace PedroFarah.WFVendas.Persistence.Repository
 
             var lista = new List<Cliente>();
 
-            await using var cmd = new NpgsqlCommand(sql, Connection, Transaction);
+            await using var cmd = new NpgsqlCommand(sql, DataModule.Connection, DataModule.Transaction);
             await using var reader = await cmd.ExecuteReaderAsync();
 
             while(await reader.ReadAsync())
@@ -107,7 +106,7 @@ namespace PedroFarah.WFVendas.Persistence.Repository
                 FROM clientes
                 WHERE id = @id";
 
-            await using var cmd = new NpgsqlCommand(sql, Connection, Transaction);
+            await using var cmd = new NpgsqlCommand(sql, DataModule.Connection, DataModule.Transaction);
             cmd.Parameters.AddWithValue("id", id);
 
             await using var reader = await cmd.ExecuteReaderAsync();
@@ -127,7 +126,7 @@ namespace PedroFarah.WFVendas.Persistence.Repository
         public async Task<bool> EmailExisteAsync(Cliente cliente)
         {
             var cmd = new NpgsqlCommand(
-                "SELECT 1 FROM clientes WHERE email=@email and id!=@id", Connection, Transaction);
+                "SELECT 1 FROM clientes WHERE email=@email and id!=@id", DataModule.Connection, DataModule.Transaction);
 
             cmd.Parameters.AddWithValue("email", cliente.Email);
             cmd.Parameters.AddWithValue("id", cliente.Id);

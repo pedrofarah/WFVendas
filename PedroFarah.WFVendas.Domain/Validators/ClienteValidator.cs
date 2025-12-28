@@ -12,11 +12,6 @@ namespace PedroFarah.WFVendas.Domain.Validators
         {
             _dataModule = dataModule;
 
-            RuleFor(x => x.Id)
-                .NotEmpty()
-                .GreaterThan(0)
-                .WithMessage("Código do cliente é obrigatório.");
-
             RuleFor(x => x.Nome)
                 .NotEmpty()
                 .WithMessage("Nome do cliente é obrigatório.");

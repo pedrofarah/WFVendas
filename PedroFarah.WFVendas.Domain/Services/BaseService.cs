@@ -1,7 +1,7 @@
 ﻿
 using FluentValidation;
-using PedroFarah.WFVendas.Domain.Interfaces.Services;
 using PedroFarah.WFVendas.Persistence.Interfaces.DataModule;
+using System.ComponentModel.DataAnnotations;
 
 namespace PedroFarah.WFVendas.Domain.Services
 {
@@ -18,13 +18,12 @@ namespace PedroFarah.WFVendas.Domain.Services
 
         public IDataModule DataModule => _dataModule;
 
-        public void Validar(T obj)
+        protected async Task ValidarAsync(T entidade)
         {
-            var result = _validator.Validate(obj);
+            var result = await _validator.ValidateAsync(entidade);
+
             if(!result.IsValid)
-            {
-                throw new ValidationException(result.Errors);
-            }
+                throw new FluentValidation.ValidationException(result.Errors);
         }
     }
 }

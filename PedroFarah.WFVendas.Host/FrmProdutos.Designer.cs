@@ -65,7 +65,7 @@
             dgvProdutos.Name = "dgvProdutos";
             dgvProdutos.ReadOnly = true;
             dgvProdutos.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvProdutos.Size = new Size(520, 200);
+            dgvProdutos.Size = new Size(547, 200);
             dgvProdutos.TabIndex = 0;
             dgvProdutos.CellClick += dgvProdutos_CellClick;
             // 
@@ -107,60 +107,58 @@
             // 
             // txtNome
             // 
-            txtNome.Location = new Point(96, 230);
+            txtNome.Location = new Point(100, 230);
             txtNome.Name = "txtNome";
-            txtNome.PlaceholderText = "Nome do Produto";
-            txtNome.Size = new Size(436, 23);
+            txtNome.Size = new Size(458, 23);
             txtNome.TabIndex = 1;
             // 
             // txtDescricao
             // 
-            txtDescricao.Location = new Point(96, 260);
+            txtDescricao.Location = new Point(100, 260);
             txtDescricao.Name = "txtDescricao";
-            txtDescricao.PlaceholderText = "Descrição";
-            txtDescricao.Size = new Size(436, 23);
+            txtDescricao.Size = new Size(458, 23);
             txtDescricao.TabIndex = 2;
             // 
             // numPreco
             // 
             numPreco.DecimalPlaces = 2;
-            numPreco.Location = new Point(96, 291);
+            numPreco.Location = new Point(100, 291);
             numPreco.Maximum = new decimal(new int[] { 100000, 0, 0, 0 });
             numPreco.Name = "numPreco";
-            numPreco.Size = new Size(79, 23);
+            numPreco.Size = new Size(105, 23);
             numPreco.TabIndex = 3;
             // 
             // numEstoque
             // 
-            numEstoque.Location = new Point(96, 321);
+            numEstoque.Location = new Point(100, 321);
             numEstoque.Maximum = new decimal(new int[] { 100000, 0, 0, 0 });
             numEstoque.Name = "numEstoque";
-            numEstoque.Size = new Size(79, 23);
+            numEstoque.Size = new Size(105, 23);
             numEstoque.TabIndex = 4;
             // 
             // btnNovo
             // 
-            btnNovo.Location = new Point(12, 356);
+            btnNovo.Location = new Point(100, 356);
             btnNovo.Name = "btnNovo";
-            btnNovo.Size = new Size(75, 23);
+            btnNovo.Size = new Size(90, 23);
             btnNovo.TabIndex = 5;
             btnNovo.Text = "Novo";
             btnNovo.Click += btnNovo_Click;
             // 
             // btnSalvar
             // 
-            btnSalvar.Location = new Point(100, 356);
+            btnSalvar.Location = new Point(200, 356);
             btnSalvar.Name = "btnSalvar";
-            btnSalvar.Size = new Size(75, 23);
+            btnSalvar.Size = new Size(90, 23);
             btnSalvar.TabIndex = 6;
             btnSalvar.Text = "Salvar";
             btnSalvar.Click += btnSalvar_Click;
             // 
             // btnExcluir
             // 
-            btnExcluir.Location = new Point(189, 356);
+            btnExcluir.Location = new Point(300, 356);
             btnExcluir.Name = "btnExcluir";
-            btnExcluir.Size = new Size(75, 23);
+            btnExcluir.Size = new Size(90, 23);
             btnExcluir.TabIndex = 7;
             btnExcluir.Text = "Excluir";
             btnExcluir.Click += btnExcluir_Click;
@@ -169,7 +167,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(547, 395);
+            ClientSize = new Size(570, 395);
             Controls.Add(dgvProdutos);
             Controls.Add(txtNome);
             Controls.Add(txtDescricao);
@@ -183,6 +181,7 @@
             Controls.Add(lblPreco);
             Controls.Add(lblEstoque);
             Name = "FrmProdutos";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "Cadastro de Produtos";
             Load += FrmProdutos_Load;
             ((System.ComponentModel.ISupportInitialize)dgvProdutos).EndInit();
