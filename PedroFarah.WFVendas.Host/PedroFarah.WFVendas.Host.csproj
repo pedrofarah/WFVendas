@@ -8,4 +8,25 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="appsettings.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PedroFarah.WFVendas.Domain\PedroFarah.WFVendas.Domain.csproj" />
+    <ProjectReference Include="..\PedroFarah.WFVendas.Dto\PedroFarah.WFVendas.Dto.csproj" />
+    <ProjectReference Include="..\PedroFarah.WFVendas.Persistence\PedroFarah.WFVendas.Persistence.csproj" />
+  </ItemGroup>
+
 </Project>

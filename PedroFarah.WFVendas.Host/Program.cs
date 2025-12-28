@@ -1,3 +1,10 @@
+using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
+using PedroFarah.WFVendas.Domain.Validator;
+using PedroFarah.WFVendas.Dto;
+using PedroFarah.WFVendas.Persistence.DataModule;
+using PedroFarah.WFVendas.Persistence.Interfaces.DataModule;
+
 namespace PedroFarah.WFVendas.Host
 {
     internal static class Program
@@ -8,10 +15,21 @@ namespace PedroFarah.WFVendas.Host
         [STAThread]
         static void Main()
         {
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
+            var host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder()
+                .ConfigureServices((context, services) =>
+                {
+                    services.AddTransient<Form1>();
+                    services.AddSingleton<IDataModule, DataModule>();
+                    services.AddTransient<IValidator<Produto>, ProdutoValidator>();
+                    services.AddTransient<IValidator<Cliente>, ClienteValidator>();
+                })
+                .Build();
+
             ApplicationConfiguration.Initialize();
-            Application.Run(new Form1());
+
+            using var scope = host.Services.CreateScope();
+            var mainForm = scope.ServiceProvider.GetRequiredService<Form1>();
+            Application.Run(mainForm);
         }
     }
 }
