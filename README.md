@@ -24,6 +24,7 @@ Aplicação organizada em camadas:
 3. Restaurar pacotes NuGet
 4. Executar o projeto PedroFarah.WFVendas.Host
 
+```text
 +----------------------+
 |   Windows Forms      |
 |        Host          |
@@ -47,3 +48,4 @@ Aplicação organizada em camadas:
 |   PostgreSQL 17.7    |
 |  Constraints / FK    |
 +----------------------+
+```
