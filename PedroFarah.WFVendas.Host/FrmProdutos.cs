@@ -86,12 +86,15 @@ namespace PedroFarah.WFVendas.Host
 
         private async void dgvProdutos_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if(e.RowIndex < 0) return;
+            if(e.RowIndex < 0)
+                return;
 
-            var row = dgvProdutos.Rows[e.RowIndex];
-            _produtoIdSelecionado = (int)row.Cells["Id"].Value;
+            if(dgvProdutos.Rows[e.RowIndex].Cells["Id"].Value == DBNull.Value)
+                return;
 
-            var prod = await _service.ObterPorIdAsync(new Produto { Id = _produtoIdSelecionado });
+            _produtoIdSelecionado = (int)(dgvProdutos.Rows[e.RowIndex].Cells["Id"].Value!);
+
+            var prod = await _service.ObterPorIdAsync(new Produto { Id = _produtoIdSelecionado }) ?? throw new Exception("Produto não localizado.");
 
             txtNome.Text = prod.Nome;
             txtDescricao.Text = prod.Descricao;

@@ -33,6 +33,8 @@
             clientesToolStripMenuItem = new ToolStripMenuItem();
             produtosToolStripMenuItem = new ToolStripMenuItem();
             vendasToolStripMenuItem = new ToolStripMenuItem();
+            movimentaçãoToolStripMenuItem = new ToolStripMenuItem();
+            relatórioDeVendasToolStripMenuItem = new ToolStripMenuItem();
             menuStrip1.SuspendLayout();
             SuspendLayout();
             // 
@@ -68,10 +70,24 @@
             // 
             // vendasToolStripMenuItem
             // 
+            vendasToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { movimentaçãoToolStripMenuItem, relatórioDeVendasToolStripMenuItem });
             vendasToolStripMenuItem.Name = "vendasToolStripMenuItem";
-            vendasToolStripMenuItem.Size = new Size(56, 20);
-            vendasToolStripMenuItem.Text = "Vendas";
-            vendasToolStripMenuItem.Click += vendasToolStripMenuItem_Click;
+            vendasToolStripMenuItem.Size = new Size(83, 20);
+            vendasToolStripMenuItem.Text = "Operacional";
+            // 
+            // movimentaçãoToolStripMenuItem
+            // 
+            movimentaçãoToolStripMenuItem.Name = "movimentaçãoToolStripMenuItem";
+            movimentaçãoToolStripMenuItem.Size = new Size(180, 22);
+            movimentaçãoToolStripMenuItem.Text = "Vendas";
+            movimentaçãoToolStripMenuItem.Click += movimentaçãoToolStripMenuItem_Click;
+            // 
+            // relatórioDeVendasToolStripMenuItem
+            // 
+            relatórioDeVendasToolStripMenuItem.Name = "relatórioDeVendasToolStripMenuItem";
+            relatórioDeVendasToolStripMenuItem.Size = new Size(180, 22);
+            relatórioDeVendasToolStripMenuItem.Text = "Relatório de Vendas";
+            relatórioDeVendasToolStripMenuItem.Click += relatórioDeVendasToolStripMenuItem_Click;
             // 
             // FrmPrincipal
             // 
@@ -97,5 +113,7 @@
         private ToolStripMenuItem clientesToolStripMenuItem;
         private ToolStripMenuItem produtosToolStripMenuItem;
         private ToolStripMenuItem vendasToolStripMenuItem;
+        private ToolStripMenuItem movimentaçãoToolStripMenuItem;
+        private ToolStripMenuItem relatórioDeVendasToolStripMenuItem;
     }
 }

@@ -40,5 +40,42 @@ namespace PedroFarah.WFVendas.Persistence.Repository
 
         }
 
+        public async Task<List<VendaRelatorio>> ObterRelatorioAsync(DateTime dataInicial, DateTime dataFinal)
+        {
+            var lista = new List<VendaRelatorio>();
+
+            const string sql = @"
+                SELECT
+                    v.id        AS VendaId,
+                    c.nome      AS Cliente,
+                    v.data_venda AS DataVenda,
+                    v.total     AS Total
+                FROM vendas v
+                JOIN clientes c ON c.id = v.cliente_id
+                WHERE v.data_venda >= @dataInicial
+                  AND v.data_venda <  @dataFinal + INTERVAL '1 day'
+                ORDER BY v.data_venda, v.id;
+            ";
+
+            await using var cmd = new NpgsqlCommand(sql, DataModule.Connection, DataModule.Transaction);
+            cmd.Parameters.AddWithValue("dataInicial", dataInicial.Date);
+            cmd.Parameters.AddWithValue("dataFinal", dataFinal.Date);
+
+            await using var reader = await cmd.ExecuteReaderAsync();
+
+            while(await reader.ReadAsync())
+            {
+                lista.Add(new VendaRelatorio
+                {
+                    VendaId = reader.GetInt32(0),
+                    Cliente = reader.GetString(1),
+                    DataVenda = reader.GetDateTime(2),
+                    Total = reader.GetDecimal(3)
+                });
+            }
+
+            return lista;
+        }
+
     }
 }

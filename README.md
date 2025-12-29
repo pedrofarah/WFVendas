@@ -1,12 +1,11 @@
 # Sistema de Vendas – Windows Forms
 
 ## Tecnologias
-- .NET 9 (C#)
+- .NET 7 (C#)
 - Windows Forms
 - PostgreSQL 17.7
 - Npgsql
 - FluentValidation
-- ReportViewer
 
 ## Arquitetura
 Aplicação organizada em camadas:
@@ -25,23 +24,26 @@ Aplicação organizada em camadas:
 3. Restaurar pacotes NuGet
 4. Executar o projeto PedroFarah.WFVendas.Host
 
-┌────────────────────┐
-│   Windows Forms    │
-│        Host        │
-└─────────┬──────────┘
-          ↓
-┌────────────────────┐
-│       Domain       │
-│      Services      │ 
-│ + FluentValidation │
-└─────────┬──────────┘
-          ↓
-┌────────────────────┐
-│    Repositories    │
-│  (Npgsql / Async)  │
-└─────────┬──────────┘
-          ↓
-┌────────────────────┐
-│    PostgreSQL 17.7 │
-│ Constraints / FK   │
-└────────────────────┘
++----------------------+
+|   Windows Forms      |
+|        Host          |
++----------+-----------+
+           |
+           v
++----------------------+
+|       Domain         |
+|      Services        |
+| + FluentValidation   |
++----------+-----------+
+           |
+           v
++----------------------+
+|     Repositories     |
+|  (Npgsql / Async)    |
++----------+-----------+
+           |
+           v
++----------------------+
+|   PostgreSQL 17.7    |
+|  Constraints / FK    |
++----------------------+

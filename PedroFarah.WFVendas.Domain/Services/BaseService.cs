@@ -1,7 +1,6 @@
 ﻿
 using FluentValidation;
 using PedroFarah.WFVendas.Persistence.Interfaces.DataModule;
-using System.ComponentModel.DataAnnotations;
 
 namespace PedroFarah.WFVendas.Domain.Services
 {

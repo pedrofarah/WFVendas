@@ -3,17 +3,25 @@ using Npgsql;
 using PedroFarah.WFVendas.Persistence.Interfaces.DataModule;
 using PedroFarah.WFVendas.Persistence.Interfaces.Repository;
 using PedroFarah.WFVendas.Persistence.Repository;
+using System.Data;
 
 namespace PedroFarah.WFVendas.Persistence.DataModule
 {
-    public class DataModule(IConfiguration configuration) : IDataModule, IAsyncDisposable, IDisposable
+    public class DataModule : IDataModule, IAsyncDisposable, IDisposable
     {
+        private readonly IConfiguration _configuration;
+
+        public DataModule(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         private NpgsqlConnection? _connection;
         private NpgsqlTransaction? _transaction;
 
         private bool _disposed;
 
-        public NpgsqlConnection? Connection => _connection ??= new NpgsqlConnection(configuration["ConnectionStrings:DefaultConnection"] ?? "");
+        public NpgsqlConnection? Connection => _connection; // ??= new NpgsqlConnection(_configuration["ConnectionStrings:DefaultConnection"] ?? "");
 
         public NpgsqlTransaction? Transaction => _transaction;
 
@@ -26,38 +34,87 @@ namespace PedroFarah.WFVendas.Persistence.DataModule
         public IVendaRepository VendaRepository
             => new VendaRepository(this);
 
+        //public async Task BeginAsync()
+        //{
+        //    //if(Connection == null)
+        //    //    throw new InvalidOperationException("Conexão não iniciada.");
+
+        //    _connection ??= new NpgsqlConnection(_configuration["ConnectionStrings:DefaultConnection"] ?? "");
+
+        //    if(Connection.State == System.Data.ConnectionState.Broken)
+        //    {
+        //        await Connection.CloseAsync().ConfigureAwait(false);
+        //    }
+
+        //    if(Connection.State != System.Data.ConnectionState.Open)
+        //    {
+        //        await Connection.OpenAsync().ConfigureAwait(false);
+        //    }
+
+        //    _transaction = await Connection.BeginTransactionAsync()
+        //                                   .ConfigureAwait(false);
+        //}
+
         public async Task BeginAsync()
         {
-            if(Connection == null)
-                throw new InvalidOperationException("Conexão não iniciada.");
-
-            if(Connection.State == System.Data.ConnectionState.Broken)
+            if(_transaction != null)
             {
-                await Connection.CloseAsync().ConfigureAwait(false);
+                try
+                {
+                    await _transaction.RollbackAsync();
+                }
+                finally
+                {
+                    await _transaction.DisposeAsync();
+                    _transaction = null;
+                }
             }
 
-            if(Connection.State != System.Data.ConnectionState.Open)
+            if(_connection != null)
             {
-                await Connection.OpenAsync().ConfigureAwait(false);
+                try
+                {
+                    if(_connection.State != ConnectionState.Closed)
+                    {
+                        await _connection.CloseAsync();
+                    }
+                }
+                finally
+                {
+                    await _connection.DisposeAsync();
+                    _connection = null;
+                }
             }
 
-            _transaction = await Connection.BeginTransactionAsync()
-                                           .ConfigureAwait(false);
+            _connection = new NpgsqlConnection(
+                _configuration.GetConnectionString("DefaultConnection"));
+
+            await _connection.OpenAsync();
+
+            _transaction = await _connection.BeginTransactionAsync();
         }
 
         public async Task CommitAsync()
         {
-            if(Connection!.State != System.Data.ConnectionState.Open)
-            {
-                throw new InvalidOperationException("Conexão fechada.");
-            }
-
             if(_transaction == null)
                 return;
 
-            await _transaction.CommitAsync();
+            try
+            {
+                await _transaction.CommitAsync();
+            }
+            finally
+            {
+                await _transaction.DisposeAsync();
+                _transaction = null;
 
-            await DisposeAsync();
+                if(_connection != null)
+                {
+                    await _connection.CloseAsync();
+                    await _connection.DisposeAsync();
+                    _connection = null;
+                }
+            }
         }
 
         public async Task RollbackAsync()
@@ -65,9 +122,22 @@ namespace PedroFarah.WFVendas.Persistence.DataModule
             if(_transaction == null)
                 return;
 
-            await _transaction.RollbackAsync();
+            try
+            {
+                await _transaction.RollbackAsync();
+            }
+            finally
+            {
+                await _transaction.DisposeAsync();
+                _transaction = null;
 
-            await DisposeAsync();
+                if(_connection != null)
+                {
+                    await _connection.CloseAsync();
+                    await _connection.DisposeAsync();
+                    _connection = null;
+                }
+            }
         }
 
 

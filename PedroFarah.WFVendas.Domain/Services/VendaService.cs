@@ -25,7 +25,7 @@ namespace PedroFarah.WFVendas.Domain.Services
 
                 foreach(var item in venda.Itens)
                 {
-                    await DataModule.ProdutoRepository.BaixarEstoqueAsync(item.Produto, item.Quantidade);
+                    await DataModule.ProdutoRepository.BaixarEstoqueAsync(item.Produto!, item.Quantidade);
                 }
 
                 await DataModule.CommitAsync();
@@ -36,6 +36,14 @@ namespace PedroFarah.WFVendas.Domain.Services
                 throw;
             }
 
+        }
+
+        public async Task<List<VendaRelatorio>> ObterRelatorioAsync(DateTime dataInicio, DateTime dataFim)
+        {
+            if(dataInicio > dataFim)
+                throw new ArgumentException("Data inicial maior que a final.");
+
+            return await DataModule.VendaRepository.ObterRelatorioAsync(dataInicio, dataFim);
         }
 
     }

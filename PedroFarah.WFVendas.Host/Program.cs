@@ -1,5 +1,7 @@
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using PedroFarah.WFVendas.Domain.Interfaces.Services;
 using PedroFarah.WFVendas.Domain.Services;
 using PedroFarah.WFVendas.Domain.Validators;
@@ -19,6 +21,11 @@ namespace PedroFarah.WFVendas.Host
         static void Main()
         {
             var host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder()
+                .ConfigureLogging(logging =>
+                {
+                    logging.ClearProviders();
+                    logging.AddDebug();
+                })
                 .ConfigureServices((context, services) =>
                 {
                     services.AddScoped<IDataModule, DataModule>();
@@ -32,6 +39,7 @@ namespace PedroFarah.WFVendas.Host
                     services.AddTransient<FrmProdutos>();
                     services.AddTransient<FrmClientes>();
                     services.AddTransient<FrmVendas>();
+                    services.AddTransient<FrmRelatorioVendas>();
                 })
                 .Build();
 

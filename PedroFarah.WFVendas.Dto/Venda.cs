@@ -7,6 +7,6 @@
         public Cliente? Cliente { get; set; }
         public DateTime DataVenda { get; set; }
         public decimal Total { get; set; }
-        public List<VendaItem> Itens { get; set; } = [];
+        public List<VendaItem> Itens { get; set; } = new();
     }
 }

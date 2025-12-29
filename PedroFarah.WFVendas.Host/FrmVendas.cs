@@ -10,7 +10,7 @@ namespace PedroFarah.WFVendas.Host
         private readonly IProdutoService _produtoService;
         private readonly IVendaService _vendaService;
 
-        private List<VendaItem> _itens = [];
+        private List<VendaItem> _itens = new();
 
         public FrmVendas(
             IClienteService clienteService,
@@ -31,7 +31,7 @@ namespace PedroFarah.WFVendas.Host
 
         private async Task NovaVenda()
         {
-            this._itens = [];
+            this._itens = new();
             await CarregarCombosAsync();
             AtualizarGrid();
 

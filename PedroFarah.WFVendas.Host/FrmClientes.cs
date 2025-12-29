@@ -88,7 +88,10 @@ namespace PedroFarah.WFVendas.Host
             if(e.RowIndex < 0)
                 return;
 
-            _clienteIdSelecionado = (int)dgvClientes.Rows[e.RowIndex].Cells["Id"].Value;
+            if(dgvClientes.Rows[e.RowIndex].Cells["Id"].Value == DBNull.Value)
+                return;
+
+            _clienteIdSelecionado = (int)(dgvClientes.Rows[e.RowIndex].Cells["Id"].Value!);
 
             var cliente = await _service.ObterPorIdAsync(
                 new Cliente { Id = _clienteIdSelecionado });
